@@ -1,83 +1,65 @@
+from windowToViewport import *
 from graphics import *
 
-win = GraphWin("line", 1860, 1024)
+def drawLineF(win,x1,y1,x2,y2,color):
+	dx = x2 - x1
+	dy = y2 - y1
 
+	dx1 = abs(dx)
+	dy1 = abs(dy)
+	
+	px = 2 * dy1 - dx1
+	py = 2 * dx1 - dy1
 
-def f(x, y):
-	return dy*x-dx*y+dx*y1-dy*x1
-
-def positiveSlopeLine(x1, y1, x2, y2, d):
-	print('in positiveSlopeLine')
-	print(dx, dy)
-	x=x1
-	y=y1
-	while(x<=x2):
-		pt=Point(x+930, 512-y)
-		pt.draw(win)
-		if(f(x+1, y+1/2)<0):
-			x=x+1
-			d+=dy
+	if (dy1 <= dx1) :
+		if (dx >= 0):
+			x = x1
+			y = y1
+			xe =x2
 		else:
-			d+=dy-dx
-			x+=1
-			y+=1
+			x = x2
+			y = y2
+			xe =x1
+		
 
-def negativeSlopeLine(x1, y1, x2, y2, d):
-	x=x1
-	y=y1
-	while(x<=x2):
-		pt=Point(x+930, 512-y)
-		pt.draw(win)
-		if(f(x+1, y-1/2)<0):
-			x=x+1
-			y=y-1
-			d+=dy+dx
+		while(x<xe):
+			win.plotPixel(x,y,color)
+			x = x + 1
+			if(px < 0):
+				px = px + 2 * dy1
+			else:
+				if ((dx < 0 and dy < 0) or (dx > 0 and dy >0)):
+					y = y+1
+				else:
+					y = y - 1
+				px = px + 2 * (dy1 - dx1)
+			
+	else:
+		if ( dy >= 0):
+			x = x1
+			y = y1
+			ye = y2
 		else:
-			d+=dy
-			x+=1
+			x = x2
+			y = y2
+			ye = y1
+		
 
-def infiniteSlopeLine(x1, y1, x2, y2):
-	x=x1
-	y=y1
-	if(y2<y1):
-		x1, x2=x2, x1
-		y1, y2=y2, y1
-	while(y<=y2):
-		pt=Point(x+930, 512-y)
-		pt.draw(win)
-		y+=1
+		while(y < ye):
+			win.plotPixel(x,y,color)
+			y = y + 1
 
+			if (py <= 0):
+				py = py + 2 * dx1
+			else:
+				if ((dx < 0 and dy < 0) or (dx > 0 and dy >0)):
+					x = x + 1
+				else:
+					x = x - 1
 
-infiniteSlopeLine(0, -930, 0, 930)
+				py = py + 2 * (dx1 - dy1)
 
-x=-930
-y=0
-while(x<=930):
-	pt=Point(x+930, 512-y)
-	pt.draw(win)
-	x+=1
-
-x1=int(input())
-y1=int(input())
-x2= int(input())
-y2=int(input())#"enter y2: ""enter x2: ""enter y1: ""enter x1: "
-if(x1>x2):
-	x1, x2=x2, x1
-	y1, y2=y2, y1
-dx=x2-x1
-dy=y2-y1
-slope=0
-d=2*dy-dx
-if(dx!=0):
-	slope=dy/dx
-else:
-	infiniteSlopeLine(x1, y1, x2, y2)
-if(slope>=0):
-	positiveSlopeLine(x1, y1, x2, y2, d)
-else:
-	negativeSlopeLine(x1, y1, x2, y2, d)
-
-
-
-win.getMouse()
-win.close()
+def drawLine(win , xw1, yw1, xw2 , yw2, color , window, viewPort):
+	xv1,yv1 = windowToViewportPoint(xw1 , yw1, window,  viewPort)
+	xv2,yv2 = windowToViewportPoint(xw2 , yw2, window,  viewPort)
+	drawLineF(win, xv1, yv1, xv2, yv2, color)

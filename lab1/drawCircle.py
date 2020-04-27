@@ -1,51 +1,32 @@
+from windowToViewport import *
 from graphics import *
 
-win = GraphWin("line", 1860, 1024)
 
+def drawCircleF(win, xc, yc, rc, color):
 
-def f(x, y):
-	return x*x+y*y-r*r
+	x = 0
+	y = rc
 
-def infiniteSlopeLine(x1, y1, x2, y2):
-	x=x1
-	y=y1
-	if(y2<y1):
-		x1, x2=x2, x1
-		y1, y2=y2, y1
-	while(y<=y2):
-		win.plotPixel(x+930, 512-y, 'orange')
-		y+=1
+	d = 5/4 - rc
 
-def drawCircle(x1, y1, r):
-	xp, yp= x1, r+y1
-	while(xp<=yp):
-		win.plotPixel(xp+930, 512-yp, 'black')
-		win.plotPixel(yp+930, 512-xp, 'black')
-		
-		win.plotPixel(xp+930, 512-(-yp), 'black')
-		win.plotPixel(yp+930, 512-(-xp), 'black')
-		
-		win.plotPixel(-xp+930, 512-yp, 'black')
-		win.plotPixel(-yp+930, 512-xp, 'black')
+	while(x<=y):
+		win.plotPixel(xc + x,yc + y,color)
+		win.plotPixel(xc + x,yc - y,color)
+		win.plotPixel(xc - x,yc + y,color)
+		win.plotPixel(xc - x,yc - y,color)
 
-		win.plotPixel(-xp+930, 512-(-yp), 'black')
-		win.plotPixel(-yp+930, 512-(-xp), 'black')
-
-		if(f(xp+1, yp-1/2)<0):
-			xp+=1
+		win.plotPixel(xc + y,yc + x,color)
+		win.plotPixel(xc + y,yc - x,color)
+		win.plotPixel(xc - y,yc + x,color)
+		win.plotPixel(xc - y,yc - x,color)
+		x = x + 1
+		if(d<0):
+			d = d + 2 * x +3
 		else:
-			xp+=1
-			yp-=1
+			d = d + 2 * (x-y) +5
+			y = y-1
 
-r=50
-infiniteSlopeLine(0, -930, 0, 930)
-
-x=-930
-y=0
-while(x<=930):
-	win.plotPixel(x+930, 512-y, 'orange')
-	x+=1
-drawCircle(0, 0, 50)
-win.getMouse()
-win.close()
-		
+def drawCircle(win, xw, yw, rw, color, window, viewPort):
+	xv,yv = windowToViewportPoint(xw,yw,window,viewPort)
+	rv = windowToViewportRadius(rw,window,viewPort)
+	drawCircleF(win , xv, yv, rv, color)
